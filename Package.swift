@@ -20,13 +20,13 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "git@github.com:ReactiveX/RxSwift.git", .upToNextMajor(from: "5.0.0"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "5.0.0"))
     ],
     targets: [
         .target(
             name: "HCaptcha",
             path: "HCaptcha",
-            exclude: ["Classes/Rx", "Example"],
+            exclude: ["Classes/Rx"],
             resources: [
                 .process("Assets/hcaptcha.html")
             ]

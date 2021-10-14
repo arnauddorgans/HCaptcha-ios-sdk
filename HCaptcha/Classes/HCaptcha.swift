@@ -24,22 +24,35 @@ public class HCaptcha {
         /** hCaptcha default endpoint. Points to
          https://hcaptcha.com/1/api.js
          */
-        case `default`
+        case `default`(host: String?)
 
         /// Alternate endpoint. Points to your first-party api.js location
-        case alternate
+        case alternate(String, host: String?)
+      
+        private var host: String {
+            let host: String?
+            switch self {
+            case let .default(host: newHost):
+                host = newHost
+            case let .alternate(_, host: newHost):
+                host = newHost
+            }
+            return host ?? "ios-sdk.hcaptcha.com"
+        }
+      
+        private var jsurl: String {
+            switch self {
+              case .default:
+                  return "https://hcaptcha.com/1/api.js"
+              case let .alternate(jsurl, host: _):
+                  return jsurl
+              }
+        }
 
         internal func getURL(locale: Locale?) -> String {
             let localeAppendix = locale.map { "&hl=\($0.identifier)" } ?? ""
-            let jsurl = "https://hcaptcha.com/1/api.js"
-            let altjsurl = "https://hcaptcha.com/1/api.js"
-            let jsargs = "?onload=onloadCallback&render=explicit&host=ios-sdk.hcaptcha.com"
-            switch self {
-            case .default:
-                return jsurl + jsargs + localeAppendix
-            case .alternate:
-                return altjsurl + jsargs + localeAppendix
-            }
+            let jsargs = "?onload=onloadCallback&render=explicit&host=\(host)"
+            return jsurl + jsargs + localeAppendix
         }
     }
 
@@ -139,7 +152,7 @@ public class HCaptcha {
     public convenience init(
         apiKey: String? = nil,
         baseURL: URL? = nil,
-        endpoint: Endpoint = .default,
+        endpoint: Endpoint = .default(host: nil),
         locale: Locale? = nil,
         size: Size = .invisible
     ) throws {
