@@ -86,22 +86,29 @@ fileprivate extension HCaptchaDecoder.Result {
      Parses a dict received from the webview onto a `HCaptchaDecoder.Result`
      */
     static func from(response: [String: Any]) -> HCaptchaDecoder.Result {
+      print("DECODE CAPTCHA FROM:\(response)")
         if let token = response["token"] as? String {
+          print("TOKEN")
             return .token(token)
         }
         else if let message = response["log"] as? String {
+          print("LOG")
             return .log(message)
         }
         else if let error = response["error"] as? Int {
+          print("ERROR")
             return from(error)
         }
 
         if let action = response["action"] as? String {
             switch action {
             case "showHCaptcha":
+              print("SHOW")
                 return .showHCaptcha
 
             case "didLoad":
+              print("DID LOAD")
+
                 return .didLoad
 
             default:
@@ -110,27 +117,34 @@ fileprivate extension HCaptchaDecoder.Result {
         }
 
         if let message = response["log"] as? String {
+          print("LOG")
+
             return .log(message)
         }
-
+      print("WRONT FORMAT")
         return .error(.wrongMessageFormat)
     }
 
     private static func from(_ error: Int) -> HCaptchaDecoder.Result {
         switch error {
         case 29:
+          print("ERROR FAILED SETUP")
             return .error(.failedSetup)
 
         case 15:
+          print("ERROR RESPONSE EXPIRED")
             return .error(.responseExpired)
 
         case 31:
+          print("ERROR FAILED RENDER")
             return .error(.failedRender)
 
         case 30:
+          print("ERROR USER CLOSED")
             return .error(.userClosed)
 
         default:
+          print("ERROR WRONG FORMAT")
             return .error(.wrongMessageFormat)
         }
     }
